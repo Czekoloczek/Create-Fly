@@ -80,6 +80,7 @@ jobs:
         run: |
           raw_tag="${{ inputs.release_tag }}"
           tag="${raw_tag#refs/tags/}"
+          # Some manual inputs are pasted as `vX.Y.Z*`; trim only a trailing wildcard.
           if [[ "$tag" == *"*" ]]; then
             tag="${tag%?}"
           fi
