@@ -75,12 +75,14 @@ jobs:
 
       - name: Resolve release tag
         id: release_tag
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.publish_release_jar }}
+        if: github.event_name == 'workflow_dispatch' && inputs.publish_release_jar
         shell: bash
         run: |
           raw_tag="${{ inputs.release_tag }}"
           tag="${raw_tag#refs/tags/}"
-          tag="${tag%\*}"
+          if [[ "$tag" == *"*" ]]; then
+            tag="${tag%?}"
+          fi
 
           if [[ -z "$tag" ]]; then
             echo "Input release_tag is required when publish_release_jar=true."
@@ -96,7 +98,7 @@ jobs:
           echo "value=$tag" >> "$GITHUB_OUTPUT"
 
       - name: Upload direct JAR to GitHub release
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.publish_release_jar }}
+        if: github.event_name == 'workflow_dispatch' && inputs.publish_release_jar
         uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ steps.release_tag.outputs.value }}

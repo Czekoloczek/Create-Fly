@@ -28,10 +28,12 @@ jobs:
         id: release_tag
         shell: bash
         run: |
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+          if [[ ${{ github.event_name }} == workflow_dispatch ]]; then
             raw_tag="${{ inputs.tag }}"
             tag="${raw_tag#refs/tags/}"
-            tag="${tag%\*}"
+            if [[ "$tag" == *"*" ]]; then
+              tag="${tag%?}"
+            fi
 
             if [[ -z "$tag" ]]; then
               echo "Input tag is required for workflow_dispatch."
