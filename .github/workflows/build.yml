@@ -91,9 +91,10 @@ jobs:
           fi
 
           git fetch --tags --force
-          if ! git rev-parse -q --verify "refs/tags/$tag" >/dev/null; then
-            echo "Tag refs/tags/$tag does not exist."
-            exit 1
+          if git rev-parse -q --verify "refs/tags/$tag" >/dev/null; then
+            echo "Using existing tag refs/tags/$tag."
+          else
+            echo "Tag refs/tags/$tag does not exist yet; it will be created from commit $GITHUB_SHA."
           fi
 
           echo "value=$tag" >> "$GITHUB_OUTPUT"
@@ -103,4 +104,5 @@ jobs:
         uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ steps.release_tag.outputs.value }}
+          target_commitish: ${{ github.sha }}
           files: ${{ steps.mod_jar.outputs.path }}
