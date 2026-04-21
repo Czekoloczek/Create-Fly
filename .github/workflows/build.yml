@@ -3,9 +3,19 @@ name: Build
 on:
   push:
   workflow_dispatch:
+    inputs:
+      publish_release_jar:
+        description: "Also upload direct .jar to an existing GitHub release tag"
+        required: false
+        type: boolean
+        default: false
+      release_tag:
+        description: "Existing git tag for release upload (example: v1.0.0)"
+        required: false
+        type: string
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -62,3 +72,32 @@ jobs:
           name: mods
           path: ${{ steps.mod_jar.outputs.path }}
           if-no-files-found: error
+
+      - name: Resolve release tag
+        id: release_tag
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.publish_release_jar }}
+        shell: bash
+        run: |
+          raw_tag="${{ inputs.release_tag }}"
+          tag="${raw_tag#refs/tags/}"
+          tag="${tag%\*}"
+
+          if [[ -z "$tag" ]]; then
+            echo "Input release_tag is required when publish_release_jar=true."
+            exit 1
+          fi
+
+          git fetch --tags --force
+          if ! git rev-parse -q --verify "refs/tags/$tag" >/dev/null; then
+            echo "Tag refs/tags/$tag does not exist."
+            exit 1
+          fi
+
+          echo "value=$tag" >> "$GITHUB_OUTPUT"
+
+      - name: Upload direct JAR to GitHub release
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.publish_release_jar }}
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ steps.release_tag.outputs.value }}
+          files: ${{ steps.mod_jar.outputs.path }}
