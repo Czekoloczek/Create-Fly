@@ -10,32 +10,55 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Java
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: "25"
           cache: gradle
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v5
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: "24"
 
       - name: Build
         run: ./gradlew build --no-daemon
 
+      - name: Locate universal mod JAR
+        id: mod_jar
+        shell: bash
+        run: |
+          shopt -s nullglob
+          jars=(build/libs/*.jar)
+          filtered=()
+          for jar in "${jars[@]}"; do
+            if [[ "$jar" == *-sources.jar || "$jar" == *-server.jar ]]; then
+              continue
+            fi
+            filtered+=("$jar")
+          done
+
+          if [[ ${#filtered[@]} -ne 1 ]]; then
+            echo "Expected exactly one universal mod JAR, found ${#filtered[@]}: ${filtered[*]}"
+            exit 1
+          fi
+
+          echo "path=${filtered[0]}" >> "$GITHUB_OUTPUT"
+
       - name: Upload mod artifacts
         uses: actions/upload-artifact@v4
         with:
           name: mods
-          path: build/libs/*.jar
+          path: ${{ steps.mod_jar.outputs.path }}
           if-no-files-found: error
