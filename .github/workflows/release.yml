@@ -42,12 +42,12 @@ jobs:
             fi
 
             git fetch --tags --force
-            if ! git rev-parse -q --verify "refs/tags/$tag" >/dev/null; then
-              echo "Tag refs/tags/$tag does not exist."
-              exit 1
+            if git rev-parse -q --verify "refs/tags/$tag" >/dev/null; then
+              echo "Checking out existing tag refs/tags/$tag."
+              git checkout --detach "refs/tags/$tag"
+            else
+              echo "Tag refs/tags/$tag does not exist yet; release will create it from commit $GITHUB_SHA."
             fi
-
-            git checkout --detach "refs/tags/$tag"
           else
             tag="${GITHUB_REF_NAME}"
           fi
@@ -97,5 +97,6 @@ jobs:
         uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ steps.release_tag.outputs.value }}
+          target_commitish: ${{ github.sha }}
           files: ${{ steps.mod_jar.outputs.path }}
           generate_release_notes: true
