@@ -5,7 +5,7 @@ import com.mojang.blaze3d.vertex.PoseStack.Pose;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.zurrtum.create.catnip.theme.Color;
 import com.zurrtum.create.client.flywheel.lib.transform.Transform;
-import net.minecraft.client.renderer.OrderedSubmitNodeCollector;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.block.BlockAndTintGetter;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
@@ -101,7 +101,7 @@ public class SuperByteBuffer implements Transform<SuperByteBuffer> {
         return task.resolve(templates);
     }
 
-    public void submit(PoseStack matrices, OrderedSubmitNodeCollector queue) {
+    public void submit(PoseStack matrices, SubmitNodeCollector queue) {
         extractRenderState().submit(matrices, queue);
     }
 

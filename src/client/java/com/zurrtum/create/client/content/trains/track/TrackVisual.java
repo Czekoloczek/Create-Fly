@@ -8,6 +8,7 @@ import com.zurrtum.create.client.AllPartialModels;
 import com.zurrtum.create.client.AllTrackMaterialModels.TrackModelHolder;
 import com.zurrtum.create.client.content.trains.track.TrackRenderer.GirderAngles;
 import com.zurrtum.create.client.content.trains.track.TrackRenderer.SegmentAngles;
+import com.zurrtum.create.client.catnip.render.EntityBlockRenderType;
 import com.zurrtum.create.client.flywheel.api.instance.Instance;
 import com.zurrtum.create.client.flywheel.api.visual.BlockEntityVisual;
 import com.zurrtum.create.client.flywheel.api.visual.ShaderLightVisual;
@@ -49,7 +50,10 @@ public class TrackVisual extends AbstractVisual implements BlockEntityVisual<Tra
         pos = blockEntity.getBlockPos();
         visualPos = pos.subtract(context.renderOrigin());
 
-        collectConnections();
+        // Skip Flywheel rendering when Iris shaders are active to avoid double-rendering with TrackRenderer
+        if (!EntityBlockRenderType.hasIris()) {
+            collectConnections();
+        }
     }
 
     @Override
@@ -63,7 +67,10 @@ public class TrackVisual extends AbstractVisual implements BlockEntityVisual<Tra
         if (blockEntity.getConnections().isEmpty()) {
             return;
         }
-
+// Skip Flywheel rendering when Iris shaders are active to avoid double-rendering with TrackRenderer
+        if (!EntityBlockRenderType.hasIris()) {
+            collectConnections();
+        }
         _delete();
 
         collectConnections();

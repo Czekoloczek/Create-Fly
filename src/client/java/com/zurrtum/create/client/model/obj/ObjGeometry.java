@@ -568,6 +568,9 @@ public class ObjGeometry implements ExtendedUnbakedGeometry {
             Baked texture = baker.materials().resolveSlot(slots, mat.diffuseColorMap, debugName);
             Transparency transparency = texture.forceTranslucent() ? Transparency.TRANSLUCENT : texture.sprite()
                 .transparency();
+            if (modelLocation.getPath().contains("/track/")) {
+                transparency = Transparency.NONE;
+            }
             int tintIndex = mat.diffuseTintIndex;
             Vector4f colorTint = mat.diffuseColor;
 

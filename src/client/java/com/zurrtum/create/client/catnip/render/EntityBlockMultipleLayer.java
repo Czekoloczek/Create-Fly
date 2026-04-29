@@ -3,19 +3,19 @@ package com.zurrtum.create.client.catnip.render;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.PoseStack.Pose;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.renderer.OrderedSubmitNodeCollector;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderType;
 
 public record EntityBlockMultipleLayer(SuperByteBufferRenderState[] layers) implements SuperByteBufferRenderState {
     @Override
-    public void submit(PoseStack matrices, OrderedSubmitNodeCollector queue) {
+    public void submit(PoseStack matrices, SubmitNodeCollector queue) {
         for (SuperByteBufferRenderState layer : layers) {
             layer.submit(matrices, queue);
         }
     }
 
     @Override
-    public void submit(Pose transform, PoseStack matrices, OrderedSubmitNodeCollector queue) {
+    public void submit(Pose transform, PoseStack matrices, SubmitNodeCollector queue) {
         matrices.pushPose();
         SuperByteBuffer.mul(matrices.last(), transform);
         for (SuperByteBufferRenderState layer : layers) {
@@ -25,7 +25,7 @@ public record EntityBlockMultipleLayer(SuperByteBufferRenderState[] layers) impl
     }
 
     @Override
-    public void submit(RenderType type, PoseStack matrices, OrderedSubmitNodeCollector queue) {
+    public void submit(RenderType type, PoseStack matrices, SubmitNodeCollector queue) {
         for (SuperByteBufferRenderState layer : layers) {
             layer.submit(type, matrices, queue);
         }

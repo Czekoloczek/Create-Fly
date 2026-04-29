@@ -19,7 +19,7 @@ import com.zurrtum.create.content.decoration.slidingDoor.DoorControl;
 import com.zurrtum.create.content.decoration.slidingDoor.SlidingDoorBlock;
 import com.zurrtum.create.content.decoration.slidingDoor.SlidingDoorBlockEntity;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.OrderedSubmitNodeCollector;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider.Context;
@@ -165,7 +165,7 @@ public class SlidingDoorRenderer implements BlockEntityRenderer<SlidingDoorBlock
     }
 
     public interface AbstractDoorRenderState {
-        void submit(PoseStack matrices, OrderedSubmitNodeCollector queue);
+        void submit(PoseStack matrices, SubmitNodeCollector queue);
     }
 
     public static class FoldingDoorRenderState implements AbstractDoorRenderState {
@@ -179,7 +179,7 @@ public class SlidingDoorRenderer implements BlockEntityRenderer<SlidingDoorBlock
         public float rightOffset;
 
         @Override
-        public void submit(PoseStack matrices, OrderedSubmitNodeCollector queue) {
+        public void submit(PoseStack matrices, SubmitNodeCollector queue) {
             matrices.translate(offset);
             if (angle != null) {
                 matrices.rotateAround(angle, 0.5f, 0.5f, 0.5f);
@@ -216,7 +216,7 @@ public class SlidingDoorRenderer implements BlockEntityRenderer<SlidingDoorBlock
         public float upperOffset;
 
         @Override
-        public void submit(PoseStack matrices, OrderedSubmitNodeCollector queue) {
+        public void submit(PoseStack matrices, SubmitNodeCollector queue) {
             matrices.translate(offset);
             lower.submit(matrices, queue);
             matrices.translate(0, upperOffset, 0);

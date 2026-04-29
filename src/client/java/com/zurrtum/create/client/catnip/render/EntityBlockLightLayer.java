@@ -3,7 +3,7 @@ package com.zurrtum.create.client.catnip.render;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.PoseStack.Pose;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.renderer.OrderedSubmitNodeCollector;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
@@ -42,7 +42,7 @@ public class EntityBlockLightLayer extends AbstractEntityBlockLayer {
     }
 
     @Override
-    public void submit(PoseStack matrices, OrderedSubmitNodeCollector queue) {
+    public void submit(PoseStack matrices, SubmitNodeCollector queue) {
         matrices.pushPose();
         matrices.last().pose().mul(pose);
         queue.submitCustomGeometry(matrices, type, this);
@@ -50,7 +50,7 @@ public class EntityBlockLightLayer extends AbstractEntityBlockLayer {
     }
 
     @Override
-    public void submit(Pose transform, PoseStack matrices, OrderedSubmitNodeCollector queue) {
+    public void submit(Pose transform, PoseStack matrices, SubmitNodeCollector queue) {
         matrices.pushPose();
         matrices.last().pose().mul(transform.pose()).mul(pose);
         queue.submitCustomGeometry(matrices, type, this);
@@ -58,7 +58,7 @@ public class EntityBlockLightLayer extends AbstractEntityBlockLayer {
     }
 
     @Override
-    public void submit(RenderType type, PoseStack matrices, OrderedSubmitNodeCollector queue) {
+    public void submit(RenderType type, PoseStack matrices, SubmitNodeCollector queue) {
         matrices.pushPose();
         matrices.last().pose().mul(pose);
         queue.submitCustomGeometry(matrices, type, this);
