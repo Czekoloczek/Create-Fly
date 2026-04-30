@@ -1,5 +1,7 @@
 package com.zurrtum.create.client.catnip.render;
 
+import java.util.concurrent.atomic.AtomicReference;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.renderer.rendertype.RenderType;
 
 public enum EntityBlockRenderType {
@@ -32,14 +34,18 @@ public enum EntityBlockRenderType {
     private final RenderType type;
     private final RenderType overworld;
     private final RenderType nether;
-    private static boolean isIrisActive = false;
-    
-    static {
+    private static final AtomicReference<Boolean> cachedIris = new AtomicReference<>(null);
+
+    private static boolean detectIris() {
+        Boolean cached = cachedIris.get();
+        if (cached != null) return cached;
         try {
-            Class.forName("net.irisshaders.iris.pipeline.IrisPipelines");
-            isIrisActive = true;
-        } catch (ClassNotFoundException e) {
-            isIrisActive = false;
+            boolean present = FabricLoader.getInstance().isModLoaded("iris");
+            cachedIris.set(present);
+            return present;
+        } catch (Throwable t) {
+            cachedIris.set(false);
+            return false;
         }
     }
 
@@ -54,7 +60,7 @@ public enum EntityBlockRenderType {
     }
 
     public RenderType getRenderType(int cardinalLighting) {
-        if (isIrisActive) {
+        if (hasIris()) {
             return switch (this) {
                 case TRANSLUCENT -> CUTOUT.selectByLighting(cardinalLighting);
                 case TRANSLUCENT_LIGHT -> CUTOUT_LIGHT.selectByLighting(cardinalLighting);
@@ -89,6 +95,6 @@ public enum EntityBlockRenderType {
     }
     
     public static boolean hasIris() {
-        return isIrisActive;
+        return detectIris();
     }
 }

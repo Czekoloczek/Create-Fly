@@ -568,8 +568,14 @@ public class ObjGeometry implements ExtendedUnbakedGeometry {
             Baked texture = baker.materials().resolveSlot(slots, mat.diffuseColorMap, debugName);
             Transparency transparency = texture.forceTranslucent() ? Transparency.TRANSLUCENT : texture.sprite()
                 .transparency();
-            if (modelLocation.getPath().contains("/track/")) {
-                transparency = Transparency.NONE;
+            // Force non-translucent for track models to avoid rendering artifacts with Iris shaders.
+            // Check for exact "track" path segment instead of substring to avoid false matches.
+            String path = modelLocation.getPath();
+            for (String segment : path.split("/")) {
+                if ("track".equals(segment)) {
+                    transparency = Transparency.NONE;
+                    break;
+                }
             }
             int tintIndex = mat.diffuseTintIndex;
             Vector4f colorTint = mat.diffuseColor;

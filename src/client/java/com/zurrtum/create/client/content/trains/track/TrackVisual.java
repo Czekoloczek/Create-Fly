@@ -67,15 +67,15 @@ public class TrackVisual extends AbstractVisual implements BlockEntityVisual<Tra
         if (blockEntity.getConnections().isEmpty()) {
             return;
         }
-// Skip Flywheel rendering when Iris shaders are active to avoid double-rendering with TrackRenderer
+
+        // Clear previous visuals first
+        _delete();
+
+        // Only collect & create Flywheel visuals when Iris is NOT active.
+        // When Iris is active, TrackRenderer handles rendering to avoid double-rendering.
         if (!EntityBlockRenderType.hasIris()) {
             collectConnections();
         }
-        _delete();
-
-        collectConnections();
-
-        lightSections.sections(collectLightSections());
     }
 
     private void collectConnections() {
