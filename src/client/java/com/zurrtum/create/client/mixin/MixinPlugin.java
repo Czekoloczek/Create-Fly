@@ -16,13 +16,11 @@ public class MixinPlugin implements IMixinConfigPlugin {
     public void onLoad(String mixinPackage) {
         mixins = new ArrayList<>();
         FabricLoader loader = FabricLoader.getInstance();
-        String sodiumVersion = loader.getModContainer("sodium")
-            .map(container -> container.getMetadata().getVersion().getFriendlyString())
-            .orElse("");
-        boolean supportedSodium = sodiumVersion.contains("0.8.10");
-        if (loader.isModLoaded("sodium") && supportedSodium) {
+        if (loader.isModLoaded("sodium")) {
             mixins.add("FabricModelAccessMixin");
-            mixins.add("AbstractBlockRenderContextMixin");
+        }
+        if (loader.isModLoaded("fabric-renderer-api-v1")) {
+            mixins.add("FabricBlockStateModelMixin");
         }
         if (loader.isModLoaded("iris")) {
             mixins.add("IrisPipelinesMixin");
@@ -39,16 +37,11 @@ public class MixinPlugin implements IMixinConfigPlugin {
         if (!loader.isModLoaded("fabric-creative-tab-api-v1")) {
             mixins.add("CreativeModeInventoryScreenMixin");
         }
-//        if (loader.isModLoaded("fabric-renderer-api-v1")) {
-//            mixins.add("FabricBlockStateModelMixin");
-//        }
 //        if (loader.isModLoaded("fabric-renderer-indigo")) {
 //            mixins.add("BlockRenderInfoMixin");
 //            mixins.add("AbstractTerrainRenderContextMixin");
 //        }
-        if (loader.isModLoaded("fabric-model-loading-api-v1")) {
-//            mixins.add("WrapperBlockStateModelMixin");
-        } else {
+        if (!loader.isModLoaded("fabric-model-loading-api-v1")) {
             mixins.add("LoadBlockModelMixin");
         }
     }

@@ -13,6 +13,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.UnknownNullability;
 import org.jspecify.annotations.Nullable;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -99,15 +100,71 @@ public abstract class WrapperBlockStateModel implements BlockStateModel, BlockSt
 
     public static BlockStateModel unwrapCompat(BlockStateModel model) {
         if (FABRIC) {
-            while (model instanceof WrapperModel wrapper) {
-                BlockStateModel child = wrapper.create$getWrapped();
-                if (child == model) {
+            while (true) {
+                BlockStateModel child = null;
+
+                if (model instanceof WrapperModel wrapper) {
+                    child = wrapper.create$getWrapped();
+                } else {
+                    child = tryUnwrapFabricWrapper(model);
+                }
+
+                if (child == null || child == model) {
                     break;
                 }
+
                 model = child;
             }
         }
         return model;
+    }
+
+    private static @Nullable BlockStateModel tryUnwrapFabricWrapper(BlockStateModel model) {
+        Class<?> type = model.getClass();
+        if (!isFabricWrapperType(type)) {
+            return null;
+        }
+
+        try {
+            Field wrappedField = findField(type, "wrapped");
+            if (wrappedField == null) {
+                return null;
+            }
+            wrappedField.setAccessible(true);
+            Object wrapped = wrappedField.get(model);
+            if (wrapped instanceof BlockStateModel child) {
+                if (child == model) {
+                    return null;
+                }
+                return child;
+            }
+        } catch (Throwable ignored) {
+        }
+
+        return null;
+    }
+
+    private static boolean isFabricWrapperType(Class<?> type) {
+        Class<?> current = type;
+        while (current != null) {
+            if ("net.fabricmc.fabric.api.client.model.loading.v1.wrapper.WrapperBlockStateModel".equals(current.getName())) {
+                return true;
+            }
+            current = current.getSuperclass();
+        }
+        return false;
+    }
+
+    private static @Nullable Field findField(Class<?> type, String fieldName) {
+        Class<?> current = type;
+        while (current != null) {
+            try {
+                return current.getDeclaredField(fieldName);
+            } catch (NoSuchFieldException ignored) {
+                current = current.getSuperclass();
+            }
+        }
+        return null;
     }
 
     private static class BlockStateRenderModel implements BlockStateModel {

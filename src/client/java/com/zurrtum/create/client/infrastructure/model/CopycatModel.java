@@ -35,7 +35,7 @@ public abstract class CopycatModel extends WrapperBlockStateModel {
         if (!(state.getBlock() instanceof CopycatBlock block)) {
             return;
         }
-        CopycatBlockEntity copycat = (CopycatBlockEntity) world.getBlockEntity(pos);
+        CopycatBlockEntity copycat = getCopycatBlockEntity(world, pos);
         BlockState material = copycat == null ? AllBlocks.COPYCAT_BASE.defaultBlockState() : copycat.getMaterial();
         addPartsWithInfo(world, pos, state, block, material, random, parts);
     }
@@ -61,11 +61,21 @@ public abstract class CopycatModel extends WrapperBlockStateModel {
 
     @Override
     public Material.Baked particleMaterialWithInfo(BlockAndTintGetter world, BlockPos pos, BlockState state) {
-        CopycatBlockEntity copycat = (CopycatBlockEntity) world.getBlockEntity(pos);
+        CopycatBlockEntity copycat = getCopycatBlockEntity(world, pos);
         if (copycat == null) {
             return model.particleMaterial();
         }
         return getModelOf(copycat.getMaterial()).particleMaterial();
+    }
+
+    private static @Nullable CopycatBlockEntity getCopycatBlockEntity(BlockAndTintGetter world, BlockPos pos) {
+        if (world.getBlockEntity(pos) instanceof CopycatBlockEntity copycat) {
+            return copycat;
+        }
+        if (Minecraft.getInstance().level != null && Minecraft.getInstance().level.getBlockEntity(pos) instanceof CopycatBlockEntity copycat) {
+            return copycat;
+        }
+        return null;
     }
 
     protected void addModelParts(

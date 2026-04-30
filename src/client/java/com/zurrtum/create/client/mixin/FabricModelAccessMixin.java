@@ -18,7 +18,7 @@ import java.util.List;
 
 @Mixin(FabricModelAccess.class)
 public class FabricModelAccessMixin {
-    @WrapOperation(method = "collectPartsOf(Lnet/minecraft/client/renderer/block/dispatch/BlockStateModel;Lnet/minecraft/client/renderer/block/BlockAndTintGetter;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/util/RandomSource;Lnet/caffeinemc/mods/sodium/client/render/helper/ListStorage;)Ljava/util/List;", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/block/model/BlockStateModel;collectParts(Lnet/minecraft/util/RandomSource;Ljava/util/List;)V"))
+    @WrapOperation(method = "collectPartsOf(Lnet/minecraft/client/renderer/block/dispatch/BlockStateModel;Lnet/minecraft/client/renderer/block/BlockAndTintGetter;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/util/RandomSource;Lnet/caffeinemc/mods/sodium/client/render/helper/ListStorage;)Ljava/util/List;", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/block/dispatch/BlockStateModel;collectParts(Lnet/minecraft/util/RandomSource;Ljava/util/List;)V"))
     private void addParts(
         BlockStateModel model,
         RandomSource random,
