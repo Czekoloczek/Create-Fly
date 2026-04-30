@@ -137,10 +137,10 @@ public class EntityBlockSbbBuilder implements BlockQuadOutput {
                 System.arraycopy(normals, 0, this.normals, 0, size);
             }
             positions[index] = new Vector4f(x, y, z, 1);
-            colors[index] = color;
+            colors[index] = -1;
             uvs[index << 1] = u;
             uvs[(index << 1) + 1] = v;
-            lights[index] = lightCoords;
+            lights[index] = 0;
             normals[index] = new Vector3f(nx, ny, nz);
             index++;
         }
