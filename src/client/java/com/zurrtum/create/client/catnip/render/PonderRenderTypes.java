@@ -83,21 +83,21 @@ public class PonderRenderTypes {
     );
     @SuppressWarnings("deprecation")
     private static final RenderType NETHER_ENTITY_BLOCK_LIGHT_SOLID = RenderType.create(
-        createLayerName("entity_block_light_solid"),
+        createLayerName("nether_entity_block_light_solid"),
         RenderSetup.builder(PonderRenderPipelines.NETHER_ENTITY_BLOCK_LIGHT_SOLID)
             .withTexture("Sampler0", TextureAtlas.LOCATION_BLOCKS).useLightmap().affectsCrumbling()
             .setOutline(OutlineProperty.AFFECTS_OUTLINE).createRenderSetup()
     );
     @SuppressWarnings("deprecation")
     private static final RenderType NETHER_ENTITY_BLOCK_LIGHT_CUTOUT = RenderType.create(
-        createLayerName("entity_block_light_cutout"),
+        createLayerName("nether_entity_block_light_cutout"),
         RenderSetup.builder(PonderRenderPipelines.NETHER_ENTITY_BLOCK_LIGHT_CUTOUT)
             .withTexture("Sampler0", TextureAtlas.LOCATION_BLOCKS).useLightmap().affectsCrumbling()
             .setOutline(OutlineProperty.AFFECTS_OUTLINE).createRenderSetup()
     );
     @SuppressWarnings("deprecation")
     private static final RenderType NETHER_ENTITY_BLOCK_LIGHT_TRANSLUCENT = RenderType.create(
-        createLayerName("entity_block_light_translucent"),
+        createLayerName("nether_entity_block_light_translucent"),
         RenderSetup.builder(PonderRenderPipelines.NETHER_ENTITY_BLOCK_LIGHT_TRANSLUCENT)
             .withTexture("Sampler0", TextureAtlas.LOCATION_BLOCKS).setOutputTarget(OutputTarget.ITEM_ENTITY_TARGET)
             .useLightmap().affectsCrumbling().sortOnUpload().setOutline(OutlineProperty.AFFECTS_OUTLINE)

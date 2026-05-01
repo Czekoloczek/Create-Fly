@@ -215,6 +215,20 @@ public abstract class LevelRendererMixin {
         return original.call(state);
     }
 
+    /**
+     * Guard against null player during world transitions to prevent crashes in the render loop.
+     * Only guard if level exists but player is null - this prevents crashes during disconnects
+     * without interfering with normal connection flow.
+     */
+    @Inject(method = "update(Lnet/minecraft/client/Camera;)V", at = @At("HEAD"), cancellable = true)
+    private void guardNullPlayerDuringUpdate(Camera camera, CallbackInfo ci) {
+        // Only cancel if level exists but player is null (disconnection scenario)
+        // Don't cancel during normal connection flow when both are null
+        if (minecraft.level != null && minecraft.player == null) {
+            ci.cancel();
+        }
+    }
+
     //    @Inject(method = "submitBlockEntities(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/state/level/LevelRenderState;Lnet/minecraft/client/renderer/SubmitNodeStorage;)V", at = @At("HEAD"))
     //    private void markSpriteActive(CallbackInfo ci) {
     //        SodiumCompat.markSpriteActive(minecraft);

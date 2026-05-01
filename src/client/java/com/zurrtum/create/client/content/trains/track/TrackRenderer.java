@@ -14,6 +14,7 @@ import com.zurrtum.create.client.catnip.render.SuperByteBuffer;
 import com.zurrtum.create.client.catnip.render.SuperByteBufferRenderState;
 import com.zurrtum.create.client.content.trains.track.TrackRenderer.TrackRenderState;
 import com.zurrtum.create.client.content.trains.track.TrackRenderer.TrackSegmentRenderState.TrackSegmentBuffers;
+import com.zurrtum.create.client.flywheel.impl.compat.IrisCompat;
 import com.zurrtum.create.client.foundation.blockEntity.renderer.SmartBlockEntityRenderer;
 import com.zurrtum.create.content.trains.track.BezierConnection;
 import com.zurrtum.create.content.trains.track.BezierConnection.Segment;
@@ -29,6 +30,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider.Context;
 import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 import net.minecraft.client.renderer.feature.ModelFeatureRenderer.CrumblingOverlay;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -332,6 +334,10 @@ public class TrackRenderer implements BlockEntityRenderer<TrackBlockEntity, Trac
         public @Nullable TrackSegmentRenderState track;
     }
 
+    private static boolean forceIrisCutout() {
+        return IrisCompat.isShaderPackInUse();
+    }
+
     public record GirderRenderState(@Nullable CardinalLighting cardinalLighting, SuperByteBuffer middle,
                                     SuperByteBuffer top, SuperByteBuffer bottom, Int2ObjectMap<GirderModels> cache,
                                     List<GirderSegmentData> girders) {
@@ -373,6 +379,39 @@ public class TrackRenderer implements BlockEntityRenderer<TrackBlockEntity, Trac
                 Couple<Pose> beam,
                 Couple<Couple<Pose>> beamCaps
             ) {
+                if (forceIrisCutout()) {
+                    var cutout = RenderTypes.solidMovingBlock();
+                    matrices.pushPose();
+                    SuperByteBuffer.mul(matrices.last(), beam.getFirst());
+                    middle.submit(cutout, matrices, queue);
+                    matrices.popPose();
+
+                    matrices.pushPose();
+                    SuperByteBuffer.mul(matrices.last(), beamCaps.getFirst().getFirst());
+                    top.submit(cutout, matrices, queue);
+                    matrices.popPose();
+
+                    matrices.pushPose();
+                    SuperByteBuffer.mul(matrices.last(), beamCaps.getSecond().getFirst());
+                    bottom.submit(cutout, matrices, queue);
+                    matrices.popPose();
+
+                    matrices.pushPose();
+                    SuperByteBuffer.mul(matrices.last(), beam.getSecond());
+                    middle.submit(cutout, matrices, queue);
+                    matrices.popPose();
+
+                    matrices.pushPose();
+                    SuperByteBuffer.mul(matrices.last(), beamCaps.getFirst().getSecond());
+                    top.submit(cutout, matrices, queue);
+                    matrices.popPose();
+
+                    matrices.pushPose();
+                    SuperByteBuffer.mul(matrices.last(), beamCaps.getSecond().getSecond());
+                    bottom.submit(cutout, matrices, queue);
+                    matrices.popPose();
+                    return;
+                }
                 middle.submit(beam.getFirst(), matrices, queue);
                 top.submit(beamCaps.getFirst().getFirst(), matrices, queue);
                 bottom.submit(beamCaps.getSecond().getFirst(), matrices, queue);
@@ -443,6 +482,24 @@ public class TrackRenderer implements BlockEntityRenderer<TrackBlockEntity, Trac
                 Pose tieTransform,
                 Couple<Pose> railTransforms
             ) {
+                if (forceIrisCutout()) {
+                    var cutout = RenderTypes.solidMovingBlock();
+                    matrices.pushPose();
+                    SuperByteBuffer.mul(matrices.last(), tieTransform);
+                    tie.submit(cutout, matrices, queue);
+                    matrices.popPose();
+
+                    matrices.pushPose();
+                    SuperByteBuffer.mul(matrices.last(), railTransforms.getFirst());
+                    left.submit(cutout, matrices, queue);
+                    matrices.popPose();
+
+                    matrices.pushPose();
+                    SuperByteBuffer.mul(matrices.last(), railTransforms.getSecond());
+                    right.submit(cutout, matrices, queue);
+                    matrices.popPose();
+                    return;
+                }
                 tie.submit(tieTransform, matrices, queue);
                 left.submit(railTransforms.getFirst(), matrices, queue);
                 right.submit(railTransforms.getSecond(), matrices, queue);

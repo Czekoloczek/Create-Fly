@@ -295,7 +295,7 @@ public class AllBlockEntityRenders {
         );
         render(AllBlockEntityTypes.CREATIVE_CRATE, FilterBlockEntityRenderer::new);
         normal(AllBlockEntityTypes.MECHANICAL_ARM, ArmRenderer::new, ArmVisual::new);
-        visual(AllBlockEntityTypes.TRACK, TrackRenderer::new, TrackVisual::new);
+        normal(AllBlockEntityTypes.TRACK, TrackRenderer::new, TrackVisual::new);
         visual(AllBlockEntityTypes.BOGEY, BogeyBlockEntityRenderer::new, BogeyBlockEntityVisual::new);
         visual(AllBlockEntityTypes.TRACK_SIGNAL, SignalRenderer::new, SignalVisual::new);
         render(AllBlockEntityTypes.TRACK_STATION, StationRenderer::new);

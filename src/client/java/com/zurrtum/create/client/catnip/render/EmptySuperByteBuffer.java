@@ -5,7 +5,7 @@ import com.mojang.blaze3d.vertex.PoseStack.Pose;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import com.zurrtum.create.catnip.theme.Color;
-import net.minecraft.client.renderer.OrderedSubmitNodeCollector;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
@@ -27,7 +27,7 @@ class EmptySuperByteBuffer extends SuperByteBuffer {
     }
 
     @Override
-    public void submit(PoseStack matrices, OrderedSubmitNodeCollector queue) {
+    public void submit(PoseStack matrices, SubmitNodeCollector queue) {
     }
 
     @Override
@@ -481,15 +481,15 @@ class EmptySuperByteBuffer extends SuperByteBuffer {
 
     private static class EmptyRenderState implements SuperByteBufferRenderState {
         @Override
-        public void submit(PoseStack matrices, OrderedSubmitNodeCollector queue) {
+        public void submit(PoseStack matrices, SubmitNodeCollector queue) {
         }
 
         @Override
-        public void submit(Pose transform, PoseStack matrices, OrderedSubmitNodeCollector queue) {
+        public void submit(Pose transform, PoseStack matrices, SubmitNodeCollector queue) {
         }
 
         @Override
-        public void submit(RenderType type, PoseStack matrices, OrderedSubmitNodeCollector queue) {
+        public void submit(RenderType type, PoseStack matrices, SubmitNodeCollector queue) {
         }
 
         @Override

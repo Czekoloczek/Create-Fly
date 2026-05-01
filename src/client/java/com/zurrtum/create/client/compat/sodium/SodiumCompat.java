@@ -11,12 +11,13 @@ import com.zurrtum.create.infrastructure.fluids.FluidStack;
 import net.caffeinemc.mods.sodium.api.texture.SpriteUtil;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.block.FluidModel;
 import net.minecraft.client.renderer.texture.TextureAtlas;
-import net.minecraft.client.resources.model.AtlasManager;
 import net.minecraft.client.resources.model.sprite.SpriteId;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
 
@@ -47,7 +48,7 @@ public class SodiumCompat {
         if (DISABLE) {
             return;
         }
-        AtlasManager atlasManager = mc.getAtlasManager();
+        var atlasManager = mc.getAtlasManager();
         SpriteUtil.INSTANCE.markSpriteActive(atlasManager.get(SAW_TEXTURE));
         SpriteUtil.INSTANCE.markSpriteActive(atlasManager.get(SAW_VANILLA_TEXTURE));
         SpriteUtil.INSTANCE.markSpriteActive(atlasManager.get(FACTORY_PANEL_TEXTURE));
@@ -67,7 +68,7 @@ public class SodiumCompat {
                 continue;
             }
             if (saw && state.is(AllBlocks.MECHANICAL_SAW)) {
-                AtlasManager atlasManager = Minecraft.getInstance().getAtlasManager();
+                var atlasManager = Minecraft.getInstance().getAtlasManager();
                 SpriteUtil.INSTANCE.markSpriteActive(atlasManager.get(SAW_TEXTURE));
                 SpriteUtil.INSTANCE.markSpriteActive(atlasManager.get(SAW_VANILLA_TEXTURE));
                 saw = false;
@@ -105,10 +106,16 @@ public class SodiumCompat {
         if (DISABLE) {
             return;
         }
-        FluidConfig config = AllFluidConfigs.get(fluid);
-        if (config != null) {
-            SpriteUtil.INSTANCE.markSpriteActive(config.still().get());
-            SpriteUtil.INSTANCE.markSpriteActive(config.flowing().get());
+        if (fluid instanceof FlowingFluid flowingFluid) {
+            FluidModel.Unbaked model = AllFluidConfigs.MODEL.get(flowingFluid);
+            if (model != null) {
+                SpriteUtil.INSTANCE.markSpriteActive(Minecraft.getInstance().getAtlasManager().get(
+                    new SpriteId(TextureAtlas.LOCATION_BLOCKS, model.stillMaterial().sprite())
+                ));
+                SpriteUtil.INSTANCE.markSpriteActive(Minecraft.getInstance().getAtlasManager().get(
+                    new SpriteId(TextureAtlas.LOCATION_BLOCKS, model.flowingMaterial().sprite())
+                ));
+            }
         }
     }
 }

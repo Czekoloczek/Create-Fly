@@ -167,22 +167,12 @@ public class CopycatPanelModel extends CopycatModel {
         }
         Direction facing = state.getValueOrElse(CopycatPanelBlock.FACING, Direction.UP);
         Vec3 normal = Vec3.atLowerCornerOf(facing.getUnitVec3i());
-        Vec3 normalScaled14 = normal.scale(14 / 16f);
-        Vec3 frontNormalScaledN13 = normal.scale((float) 0);
-        Vec3 normalScaledN13 = normal.scale(-13 / 16f);
-        double frontContract = 15d / 16;
-        double contract = 14d / 16;
-        AABB frontBB = CUBE_AABB.contract(normal.x * frontContract, normal.y * frontContract, normal.z * frontContract);
-        AABB bb = CUBE_AABB.contract(normal.x * contract, normal.y * contract, normal.z * contract)
-            .move(normalScaled14);
+        // Build a stable 3/16-thick slab aligned with panel facing.
+        AABB panelBB = CUBE_AABB.contract(normal.x * (13d / 16), normal.y * (13d / 16), normal.z * (13d / 16));
         for (BlockStateModelPart part : original) {
             QuadCollection.Builder builder = new QuadCollection.Builder();
             addPanelCroppedQuads(
-                facing,
-                frontBB,
-                bb,
-                frontNormalScaledN13,
-                normalScaledN13,
+                panelBB,
                 part.getQuads(null),
                 builder::addUnculledFace
             );
@@ -191,16 +181,9 @@ public class CopycatPanelModel extends CopycatModel {
                     continue;
                 }
                 addPanelCroppedQuads(
-                    facing,
-                    frontBB,
-                    bb,
-                    frontNormalScaledN13,
-                    normalScaledN13,
+                    panelBB,
                     part.getQuads(direction),
-                    block.shouldFaceAlwaysRender(
-                        state,
-                        direction
-                    ) ? builder::addUnculledFace : (BakedQuad quad) -> builder.addCulledFace(direction, quad)
+                    builder::addUnculledFace
                 );
             }
             parts.add(new SimpleModelWrapper(builder.build(), part.useAmbientOcclusion(), part.particleMaterial()));
@@ -208,11 +191,7 @@ public class CopycatPanelModel extends CopycatModel {
     }
 
     protected void addPanelCroppedQuads(
-        Direction facing,
-        AABB frontBB,
-        AABB bb,
-        Vec3 frontNormalScaledN13,
-        Vec3 normalScaledN13,
+        AABB panelBB,
         List<BakedQuad> quads,
         Consumer<BakedQuad> consumer
     ) {
@@ -220,29 +199,9 @@ public class CopycatPanelModel extends CopycatModel {
         if (size == 0) {
             return;
         }
-        AABB crop;
-        Vec3 move;
-        for (boolean front : Iterate.trueAndFalse) {
-            if (front) {
-                crop = frontBB;
-                move = frontNormalScaledN13;
-            } else {
-                crop = bb;
-                move = normalScaledN13;
-            }
-            for (int i = 0; i < size; i++) {
-                BakedQuad quad = quads.get(i);
-                Direction direction = quad.direction();
-
-                if (front && direction == facing) {
-                    continue;
-                }
-                if (!front && direction == facing.getOpposite()) {
-                    continue;
-                }
-
-                consumer.accept(BakedModelHelper.cropAndMove(quad, crop, move));
-            }
+        for (int i = 0; i < size; i++) {
+            BakedQuad quad = quads.get(i);
+            consumer.accept(BakedModelHelper.cropAndMove(quad, panelBB, Vec3.ZERO));
         }
     }
 }

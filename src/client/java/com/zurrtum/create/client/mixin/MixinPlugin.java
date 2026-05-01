@@ -16,35 +16,32 @@ public class MixinPlugin implements IMixinConfigPlugin {
     public void onLoad(String mixinPackage) {
         mixins = new ArrayList<>();
         FabricLoader loader = FabricLoader.getInstance();
-        //        if (loader.isModLoaded("sodium")) {
-        //            mixins.add("FabricModelAccessMixin");
-        //            mixins.add("AbstractBlockRenderContextMixin");
-        //        }
-        //        if (loader.isModLoaded("iris")) {
-        //            mixins.add("IrisPipelinesMixin");
-        //        }
-        //        if (loader.isModLoaded("eiv")) {
-        //            mixins.add("ItemSlotMixin");
-        //            mixins.add("FabricEIVMixin");
-        //            mixins.add("RecipeViewMenuMixin");
-        //            mixins.add("ViewTypeButtonMixin");
-        //            mixins.add("FluidItemSpecialRendererMixin");
-        //            mixins.add("RecipeViewScreenMixin");
-        //            mixins.add("CraftingViewRecipeAccessor");
-        //        }
+        if (loader.isModLoaded("sodium")) {
+            mixins.add("FabricModelAccessMixin");
+        }
+        if (loader.isModLoaded("fabric-renderer-api-v1")) {
+            mixins.add("FabricBlockStateModelMixin");
+        }
+        if (loader.isModLoaded("iris")) {
+            mixins.add("IrisPipelinesMixin");
+        }
+        if (loader.isModLoaded("eiv")) {
+            mixins.add("ItemSlotMixin");
+            mixins.add("FabricEIVMixin");
+            mixins.add("RecipeViewMenuMixin");
+            mixins.add("ViewTypeButtonMixin");
+            mixins.add("FluidItemSpecialRendererMixin");
+            mixins.add("RecipeViewScreenMixin");
+            mixins.add("CraftingViewRecipeAccessor");
+        }
         if (!loader.isModLoaded("fabric-creative-tab-api-v1")) {
             mixins.add("CreativeModeInventoryScreenMixin");
         }
-//        if (loader.isModLoaded("fabric-renderer-api-v1")) {
-//            mixins.add("FabricBlockStateModelMixin");
-//        }
 //        if (loader.isModLoaded("fabric-renderer-indigo")) {
 //            mixins.add("BlockRenderInfoMixin");
 //            mixins.add("AbstractTerrainRenderContextMixin");
 //        }
-        if (loader.isModLoaded("fabric-model-loading-api-v1")) {
-//            mixins.add("WrapperBlockStateModelMixin");
-        } else {
+        if (!loader.isModLoaded("fabric-model-loading-api-v1")) {
             mixins.add("LoadBlockModelMixin");
         }
     }
