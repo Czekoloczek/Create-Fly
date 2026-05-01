@@ -10,11 +10,11 @@ import com.zurrtum.create.catnip.math.VecHelper;
 import com.zurrtum.create.client.AllPartialModels;
 import com.zurrtum.create.client.AllTrackMaterialModels.TrackModelHolder;
 import com.zurrtum.create.client.catnip.render.CachedBuffers;
-import com.zurrtum.create.client.catnip.render.EntityBlockRenderType;
 import com.zurrtum.create.client.catnip.render.SuperByteBuffer;
 import com.zurrtum.create.client.catnip.render.SuperByteBufferRenderState;
 import com.zurrtum.create.client.content.trains.track.TrackRenderer.TrackRenderState;
 import com.zurrtum.create.client.content.trains.track.TrackRenderer.TrackSegmentRenderState.TrackSegmentBuffers;
+import com.zurrtum.create.client.flywheel.impl.compat.IrisCompat;
 import com.zurrtum.create.client.foundation.blockEntity.renderer.SmartBlockEntityRenderer;
 import com.zurrtum.create.content.trains.track.BezierConnection;
 import com.zurrtum.create.content.trains.track.BezierConnection.Segment;
@@ -335,7 +335,7 @@ public class TrackRenderer implements BlockEntityRenderer<TrackBlockEntity, Trac
     }
 
     private static boolean forceIrisCutout() {
-        return EntityBlockRenderType.hasIris();
+        return IrisCompat.isShaderPackInUse();
     }
 
     public record GirderRenderState(@Nullable CardinalLighting cardinalLighting, SuperByteBuffer middle,

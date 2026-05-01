@@ -10,6 +10,7 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
 import com.mojang.blaze3d.platform.Transparency;
 import com.mojang.math.Transformation;
+import com.zurrtum.create.client.flywheel.impl.compat.IrisCompat;
 import com.zurrtum.create.client.model.ExtendedUnbakedGeometry;
 import com.zurrtum.create.client.model.NeoForgeModelProperties;
 import com.zurrtum.create.client.model.StandardModelParameters;
@@ -568,13 +569,15 @@ public class ObjGeometry implements ExtendedUnbakedGeometry {
             Baked texture = baker.materials().resolveSlot(slots, mat.diffuseColorMap, debugName);
             Transparency transparency = texture.forceTranslucent() ? Transparency.TRANSLUCENT : texture.sprite()
                 .transparency();
-            // Force non-translucent for track models to avoid rendering artifacts with Iris shaders.
-            // Check for exact "track" path segment instead of substring to avoid false matches.
-            String path = modelLocation.getPath();
-            for (String segment : path.split("/")) {
-                if ("track".equals(segment)) {
-                    transparency = Transparency.NONE;
-                    break;
+            if (IrisCompat.isShaderPackInUse()) {
+                // Force non-translucent for track models only while shader packs are active.
+                // Check for exact "track" path segment instead of substring to avoid false matches.
+                String path = modelLocation.getPath();
+                for (String segment : path.split("/")) {
+                    if ("track".equals(segment)) {
+                        transparency = Transparency.NONE;
+                        break;
+                    }
                 }
             }
             int tintIndex = mat.diffuseTintIndex;

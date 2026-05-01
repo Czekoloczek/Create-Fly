@@ -9,6 +9,8 @@ classes/
 
 *.launch
 
+context/
+
 # idea
 
 .idea/
